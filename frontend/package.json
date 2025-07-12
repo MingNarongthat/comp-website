@@ -1,0 +1,29 @@
+{
+  "name": "personal-web-frontend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "latest",
+    "@nuxtjs/eslint-config-typescript": "^12.1.0",
+    "@nuxtjs/tailwindcss": "^6.11.0",
+    "@pinia/nuxt": "^0.5.1",
+    "@types/node": "^20.0.0",
+    "eslint": "^8.56.0",
+    "nuxt": "^3.9.0",
+    "typescript": "^5.3.0",
+    "vue-tsc": "^1.8.0"
+  },
+  "dependencies": {
+    "@pinia/nuxt": "^0.5.1",
+    "pinia": "^2.1.0"
+  }
+}
