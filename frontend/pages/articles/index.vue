@@ -44,8 +44,35 @@
               <article 
                 v-for="article in articles" 
                 :key="article.id" 
-                class="bg-brand-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300 border border-brand-gray"
+                class="bg-brand-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 border border-brand-gray group"
+                @mouseenter="startImageSlideshow(article.id)"
+                @mouseleave="stopImageSlideshow(article.id)"
               >
+                <!-- Article Image -->
+                <div v-if="getArticleImages(article).length > 0" class="relative h-48 overflow-hidden">
+                  <div 
+                    v-for="(image, index) in getArticleImages(article)" 
+                    :key="index"
+                    class="absolute inset-0 transition-opacity duration-500"
+                    :class="{ 'opacity-100': (currentImageIndex[article.id] || 0) === index, 'opacity-0': (currentImageIndex[article.id] || 0) !== index }"
+                  >
+                    <img 
+                      :src="getImageUrl(image)" 
+                      :alt="`${article.title} - Image ${index + 1}`"
+                      class="w-full h-full object-cover"
+                    >
+                  </div>
+                  <!-- Image indicator dots (for multiple images) -->
+                  <div v-if="getArticleImages(article).length > 1" class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1">
+                    <div 
+                      v-for="(image, index) in getArticleImages(article)" 
+                      :key="index"
+                      class="w-2 h-2 rounded-full transition-all duration-300"
+                      :class="(currentImageIndex[article.id] || 0) === index ? 'bg-white' : 'bg-white/50'"
+                    ></div>
+                  </div>
+                </div>
+
                 <div class="p-6">
                   <h2 class="text-xl font-semibold text-brand-dark mb-3 line-clamp-2">
                     {{ article.title }}
@@ -86,10 +113,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
-const articles = ref([])
-const loading = ref(true)
+// Fetch articles data on server-side for better initial load
+const { data: articlesData } = await useFetch('/api/articles')
+
+const articles = ref(articlesData.value || [])
+const loading = ref(false)
+const currentImageIndex = ref({})
+const slideshowIntervals = ref({})
 
 const formatDate = (dateString) => {
   const date = new Date(dateString)
@@ -100,25 +132,76 @@ const formatDate = (dateString) => {
   })
 }
 
-const fetchArticles = async () => {
+const getImageUrl = (imagePath) => {
+  if (imagePath.startsWith('http')) {
+    return imagePath
+  }
+  // Use frontend proxy for images to avoid client-side CORS issues
+  if (imagePath.startsWith('/uploads/')) {
+    return `/api/proxy${imagePath}`
+  }
+  return imagePath
+}
+
+const getArticleImages = (article) => {
+  if (!article?.images) return []
   try {
-    // Fetch public articles without auth for articles listing page
-    const config = useRuntimeConfig()
-    const response = await fetch(`${config.public.apiBase}/api/articles`)
-    if (response.ok) {
-      const data = await response.json()
-      articles.value = data || []
+    return typeof article.images === 'string' 
+      ? JSON.parse(article.images) 
+      : article.images
+  } catch {
+    return []
+  }
+}
+
+const initializeImageIndexes = () => {
+  if (!articles.value) return
+  articles.value.forEach(article => {
+    if (article && article.id && !currentImageIndex.value[article.id]) {
+      currentImageIndex.value[article.id] = 0
     }
-  } catch (error) {
-    console.log('Could not fetch articles')
-    articles.value = []
-  } finally {
-    loading.value = false
+  })
+}
+
+const startImageSlideshow = (articleId) => {
+  if (!articles.value || !articleId) return
+  const article = articles.value.find(a => a && a.id === articleId)
+  if (!article) return
+  
+  const images = getArticleImages(article)
+  if (images.length <= 1) return
+  
+  // Initialize index if not exists
+  if (currentImageIndex.value[articleId] === undefined) {
+    currentImageIndex.value[articleId] = 0
+  }
+  
+  // Start slideshow
+  slideshowIntervals.value[articleId] = setInterval(() => {
+    currentImageIndex.value[articleId] = (currentImageIndex.value[articleId] + 1) % images.length
+  }, 1500) // Change image every 1.5 seconds
+}
+
+const stopImageSlideshow = (articleId) => {
+  if (!articleId) return
+  if (slideshowIntervals.value[articleId]) {
+    clearInterval(slideshowIntervals.value[articleId])
+    delete slideshowIntervals.value[articleId]
+    // Reset to first image
+    if (currentImageIndex.value[articleId] !== undefined) {
+      currentImageIndex.value[articleId] = 0
+    }
   }
 }
 
 onMounted(() => {
-  fetchArticles()
+  // Initialize image indexes for client-side interactivity
+  initializeImageIndexes()
+})
+
+onUnmounted(() => {
+  // Clear all slideshow intervals
+  Object.values(slideshowIntervals.value).forEach(interval => clearInterval(interval))
 })
 
 useSeoMeta({

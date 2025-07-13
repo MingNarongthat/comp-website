@@ -27,13 +27,33 @@ func main() {
 	}
 
 	email := os.Args[1]
-	password := os.Args[2]
+	userPassword := os.Args[2]
 	name := os.Args[3]
 
 	// Database connection
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
-		dsn = "host=localhost port=5432 user=postgres password=postgres dbname=personalweb sslmode=disable"
+		host := os.Getenv("DB_HOST")
+		if host == "" {
+			host = "localhost"
+		}
+		user := os.Getenv("DB_USER")
+		if user == "" {
+			user = "postgres"
+		}
+		dbPassword := os.Getenv("DB_PASSWORD")
+		if dbPassword == "" {
+			dbPassword = "postgres"
+		}
+		dbname := os.Getenv("DB_NAME")
+		if dbname == "" {
+			dbname = "personalweb"
+		}
+		port := os.Getenv("DB_PORT")
+		if port == "" {
+			port = "5432"
+		}
+		dsn = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, dbPassword, dbname)
 	}
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
@@ -53,7 +73,7 @@ func main() {
 	}
 
 	// Hash password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userPassword), bcrypt.DefaultCost)
 	if err != nil {
 		log.Fatal("Failed to hash password:", err)
 	}

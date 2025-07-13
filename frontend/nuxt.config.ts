@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  devtools: { enabled: true },
+  devtools: { enabled: false },
   modules: [
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
@@ -14,7 +14,7 @@ export default defineNuxtConfig({
         { hid: 'description', name: 'description', content: 'Personal Web Project' }
       ],
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+        { rel: 'icon', type: 'image/png', href: '/favicon.jpg' }
       ]
     }
   },

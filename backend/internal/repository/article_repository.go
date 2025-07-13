@@ -20,7 +20,7 @@ func (r *ArticleRepository) Create(article *models.Article) error {
 
 func (r *ArticleRepository) FindAll() ([]models.Article, error) {
 	var articles []models.Article
-	err := r.db.Find(&articles).Error
+	err := r.db.Order("created_at DESC").Find(&articles).Error
 	return articles, err
 }
 

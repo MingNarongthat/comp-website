@@ -37,6 +37,10 @@ func (s *UserService) FindUserByRole(role string) (*models.User, error) {
 	return s.userRepo.FindByRole(role)
 }
 
+func (s *UserService) GetUserByID(id string) (*models.User, error) {
+	return s.userRepo.FindByID(id)
+}
+
 func (s *UserService) Login(email, password string) (string, error) {
 	user, err := s.userRepo.FindByEmail(email)
 	if err != nil {

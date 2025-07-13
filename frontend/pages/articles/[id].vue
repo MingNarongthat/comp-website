@@ -77,6 +77,28 @@
                 </div>
               </div>
 
+              <!-- Article Images -->
+              <div v-if="articleImages && articleImages.length > 0" class="p-8 pb-0">
+                <div class="flex justify-center">
+                  <div v-if="articleImages.length === 1" class="w-full max-w-2xl">
+                    <img 
+                      :src="getImageUrl(articleImages[0])" 
+                      :alt="article.title"
+                      class="article-image"
+                    >
+                  </div>
+                  <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-4xl">
+                    <img 
+                      v-for="(image, index) in articleImages" 
+                      :key="index"
+                      :src="getImageUrl(image)" 
+                      :alt="`${article.title} - Image ${index + 1}`"
+                      class="article-image"
+                    >
+                  </div>
+                </div>
+              </div>
+
               <!-- Article Content -->
               <div class="p-8">
                 <div class="prose prose-lg max-w-none">
@@ -127,8 +149,11 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-const article = ref(null)
-const loading = ref(true)
+
+// Fetch article data on server-side for better initial load
+const { data: articleData } = await useFetch(`/api/articles/${route.params.id}`)
+const article = ref(articleData.value)
+const loading = ref(false)
 
 const formatDate = (dateString) => {
   const date = new Date(dateString)
@@ -146,6 +171,17 @@ const readingTime = computed(() => {
   return Math.ceil(wordCount / wordsPerMinute)
 })
 
+const articleImages = computed(() => {
+  if (!article.value?.images) return []
+  try {
+    return typeof article.value.images === 'string' 
+      ? JSON.parse(article.value.images) 
+      : article.value.images
+  } catch {
+    return []
+  }
+})
+
 const shareArticle = () => {
   if (navigator.share) {
     navigator.share({
@@ -161,34 +197,38 @@ const shareArticle = () => {
   }
 }
 
-const fetchArticle = async () => {
-  try {
-    const articleId = route.params.id
-    const config = useRuntimeConfig()
-    
-    // Try to fetch without auth first (for public access)
-    let response = await fetch(`${config.public.apiBase}/api/articles/${articleId}`)
-    
-    if (response.ok) {
-      const data = await response.json()
-      article.value = data
-    } else {
-      article.value = null
-    }
-  } catch (error) {
-    console.log('Could not fetch article')
-    article.value = null
-  } finally {
-    loading.value = false
+const getImageUrl = (imagePath) => {
+  if (imagePath.startsWith('http')) {
+    return imagePath
   }
+  // Use frontend proxy for images to avoid client-side CORS issues
+  if (imagePath.startsWith('/uploads/')) {
+    return `/api/proxy${imagePath}`
+  }
+  return imagePath
 }
 
-onMounted(() => {
-  fetchArticle()
-})
+// Article data is already loaded via SSR
 
 useSeoMeta({
   title: () => article.value ? `${article.value.title} - Personal Web` : 'Article - Personal Web',
   description: () => article.value ? article.value.content.substring(0, 160) + '...' : 'Read this article on Personal Web'
 })
 </script>
+
+<style scoped>
+/* Ensure images display properly */
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.article-image {
+  width: 100% !important;
+  height: 16rem !important;
+  object-fit: cover !important;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+</style>

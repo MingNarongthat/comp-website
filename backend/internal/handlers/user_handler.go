@@ -119,3 +119,17 @@ func (h *UserHandler) CreateSuperuser(c *gin.Context) {
 		"user":    user,
 	})
 }
+
+func (h *UserHandler) GetUser(c *gin.Context) {
+	userID := c.Param("id")
+	
+	user, err := h.userService.GetUserByID(userID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+	
+	// Don't return password
+	user.Password = ""
+	c.JSON(http.StatusOK, user)
+}

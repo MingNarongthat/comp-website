@@ -4,32 +4,38 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - "8080:8080"
     environment:
       - DB_HOST=postgres
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
+      - DB_USER=postgreskh
+      - DB_PASSWORD=postgreskh5697
       - DB_NAME=personalweb
       - DB_PORT=5432
+      # - SMTP_HOST=smtp.gmail.com
+      # - SMTP_PORT=587
+      # - SMTP_USER=narongthat.thanya@gmail.com
+      # - SMTP_PASS=eskgtqrmpdsaqfhr
+      # - FROM_EMAIL=narongthat.thanya@gmail.com
+      # - CONTACT_EMAILS=narongthat.t@outlook.co.th
     depends_on:
       postgres:
         condition: service_healthy
-    # volumes:
-      # - ./backend:/app
+    volumes:
+      - ./backend:/app
     networks:
       - app-network
 
   frontend:
     build:
       context: ./frontend
-      dockerfile: ../docker/frontend/Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - "3000:3000"
-    # volumes:
-      # - ./frontend:/app
-      # - /app/node_modules
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     depends_on:
       - backend
     networks:
@@ -40,8 +46,8 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgreskh
+      - POSTGRES_PASSWORD=postgreskh5697
       - POSTGRES_DB=personalweb
     volumes:
       - postgres_data:/var/lib/postgresql/data

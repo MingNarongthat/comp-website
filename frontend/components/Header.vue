@@ -1,6 +1,9 @@
 <template>
   <header class="w-full bg-brand-white shadow py-4 px-8 flex items-center justify-between">
-    <div class="text-2xl font-bold text-brand-dark">Personal Web</div>
+    <NuxtLink to="/" class="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+      <img src="~/assets/KH logo.png" alt="KH Logo" class="h-10 w-auto">
+      <!-- <div class="text-2xl font-bold text-brand-dark">Personal Web</div> -->
+    </NuxtLink>
     <nav class="flex items-center space-x-4">
       <NuxtLink to="/" class="mx-2 text-brand-dark hover:text-brand-primary font-medium">Home</NuxtLink>
       <NuxtLink to="/about" class="mx-2 text-brand-dark hover:text-brand-primary font-medium">About</NuxtLink>
