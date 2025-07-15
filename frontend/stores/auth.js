@@ -26,15 +26,18 @@ export const useAuthStore = defineStore('auth', {
       }
 
       const data = await response.json();
+      console.log('Login response:', data);
       this.token = data.token;
       // Decode token to get user info (role, email)
       const base64Url = this.token.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
       const decoded = JSON.parse(window.atob(base64));
       this.user = { email: decoded.email, role: decoded.role };
+      console.log('Decoded user:', this.user);
 
       localStorage.setItem('token', this.token);
       localStorage.setItem('user', JSON.stringify(this.user));
+      console.log('Token saved to localStorage');
     },
     logout() {
       this.token = null;
@@ -46,6 +49,7 @@ export const useAuthStore = defineStore('auth', {
       if (process.client) {
         this.token = localStorage.getItem('token');
         const user = localStorage.getItem('user');
+        console.log('Auth store initialized - token:', this.token, 'user:', user);
         if (user) {
           this.user = JSON.parse(user);
         }
