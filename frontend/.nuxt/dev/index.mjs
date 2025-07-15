@@ -645,7 +645,7 @@ const _inlineRuntimeConfig = {
     }
   },
   "public": {
-    "apiBase": "https://kurohaeksagon.com"
+    "apiBase": "http://localhost:8080"
   }
 };
 const envOptions = {

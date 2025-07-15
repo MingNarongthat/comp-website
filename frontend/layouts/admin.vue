@@ -86,6 +86,21 @@ import { useRouter } from 'vue-router';
 const authStore = useAuthStore();
 const router = useRouter();
 
+// Initialize auth store and check authentication
+onMounted(() => {
+  authStore.initialize();
+  if (!authStore.isAuthenticated) {
+    router.push('/admin/login');
+  }
+});
+
+// Watch for authentication changes
+watch(() => authStore.isAuthenticated, (isAuthenticated) => {
+  if (!isAuthenticated) {
+    router.push('/admin/login');
+  }
+});
+
 const logout = () => {
   authStore.logout();
   router.push('/admin/login');
