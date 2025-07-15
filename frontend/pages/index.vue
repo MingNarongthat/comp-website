@@ -289,7 +289,7 @@ const getCompanyLogoUrl = (logoPath) => {
   }
   // Use frontend proxy for images to avoid client-side CORS issues
   if (logoPath.startsWith('/uploads/')) {
-    return `/api/proxy${logoPath}`
+    return logoPath
   }
   return logoPath
 }
@@ -300,7 +300,7 @@ const getImageUrl = (imagePath) => {
   }
   // Use frontend proxy for images to avoid client-side CORS issues
   if (imagePath.startsWith('/uploads/')) {
-    return `/api/proxy${imagePath}`
+    return imagePath
   }
   return imagePath
 }

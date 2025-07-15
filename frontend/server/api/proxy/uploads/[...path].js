@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
     
     // Use internal Docker network hostname instead of localhost
     const backendUrl = process.env.NODE_ENV === 'production' 
-      ? process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8080'
+      ? 'http://backend:8080'
       : 'http://backend:8080'
     
     const imageUrl = `${backendUrl}/uploads/${path}`

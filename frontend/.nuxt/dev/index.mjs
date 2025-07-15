@@ -645,7 +645,7 @@ const _inlineRuntimeConfig = {
     }
   },
   "public": {
-    "apiBase": "http://localhost:8080"
+    "apiBase": "https://kurohaeksagon.com"
   }
 };
 const envOptions = {
@@ -1816,7 +1816,7 @@ const companies$1 = /*#__PURE__*/Object.freeze({
 const ____path_ = defineEventHandler(async (event) => {
   try {
     const path = getRouterParam(event, "path");
-    const backendUrl = false ? process.env.NUXT_PUBLIC_API_BASE || "http://localhost:8080" : "http://backend:8080";
+    const backendUrl = false ? "http://backend:8080" : "http://backend:8080";
     const imageUrl = `${backendUrl}/uploads/${path}`;
     console.log("Image proxy fetching:", imageUrl);
     const response = await fetch(imageUrl);
