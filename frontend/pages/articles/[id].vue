@@ -80,21 +80,23 @@
               <!-- Article Images -->
               <div v-if="articleImages && articleImages.length > 0" class="p-8 pb-0">
                 <div class="flex justify-center">
-                  <div v-if="articleImages.length === 1" class="w-full max-w-2xl">
+                  <div v-if="articleImages.length === 1" class="w-full max-w-4xl">
                     <img 
                       :src="getImageUrl(articleImages[0])" 
                       :alt="article.title"
-                      class="article-image"
+                      class="article-image mx-auto"
                     >
                   </div>
-                  <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-4xl">
-                    <img 
-                      v-for="(image, index) in articleImages" 
-                      :key="index"
-                      :src="getImageUrl(image)" 
-                      :alt="`${article.title} - Image ${index + 1}`"
-                      class="article-image"
-                    >
+                  <div v-else class="w-full max-w-6xl">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div v-for="(image, index) in articleImages" :key="index" class="flex justify-center">
+                        <img 
+                          :src="getImageUrl(image)" 
+                          :alt="`${article.title} - Image ${index + 1}`"
+                          class="article-image"
+                        >
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -226,8 +228,9 @@ img {
 
 .article-image {
   width: 100% !important;
-  height: 16rem !important;
-  object-fit: cover !important;
+  height: auto !important;
+  max-height: 60vh !important;
+  object-fit: contain !important;
   border-radius: 0.5rem !important;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
 }
