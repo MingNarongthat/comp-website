@@ -303,4 +303,9 @@ const getImageUrl = (imagePath) => {
   }
   return `${config.public.apiBase}${imagePath}`;
 };
+
+// Auth check - redirect if not authenticated
+definePageMeta({
+  middleware: 'auth'
+});
 </script>
