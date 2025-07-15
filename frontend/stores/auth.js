@@ -7,7 +7,7 @@ export const useAuthStore = defineStore('auth', {
   }),
   getters: {
     isAuthenticated: (state) => !!state.token,
-    isSuperadmin: (state) => state.user && state.user.role === 'superadmin',
+    isSuperadmin: (state) => state.user && (state.user.role === 'superadmin' || state.user.role === 'admin'),
   },
   actions: {
     async login(email, password) {
