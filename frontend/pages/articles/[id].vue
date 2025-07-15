@@ -201,9 +201,9 @@ const getImageUrl = (imagePath) => {
   if (imagePath.startsWith('http')) {
     return imagePath
   }
-  // Use frontend proxy for images to avoid client-side CORS issues
+  // Use direct access since nginx is configured to proxy /uploads
   if (imagePath.startsWith('/uploads/')) {
-    return `/api/proxy${imagePath}`
+    return imagePath
   }
   return imagePath
 }
